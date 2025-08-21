@@ -8,9 +8,14 @@
   "description": "A new way to find information.",
   "icons": [
     {
-      "src": "https://cdn.jsdelivr.net/npm/@fluentui/react-icons@2.0.218/lib-commonjs/assets/apps-20x20.svg",
-      "sizes": "20x20",
-      "type": "image/svg+xml"
+      "src": "https://i.ibb.co/6P6Xg6q/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://i.ibb.co/s33d52N/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
   ]
 }
