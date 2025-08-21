@@ -516,169 +516,32 @@
                 }, 3000);
             }
 
-            async function handleSearch() {
+            function handleSearch() {
                 const query = searchInput.value.trim();
                 if (!query) {
                     showMessage("Please enter a search query.", "error");
                     return;
                 }
-
-                resultsBox.classList.add('hidden');
-                loadingBox.classList.remove('hidden');
-
-                try {
-                    // This code must be run in an environment where google_search and
-                    // content_fetcher tools are provided (e.g., Google AI Studio).
-                    const searchResults = await google_search.search(queries=[query]);
-                    
-                    if (!searchResults || searchResults.length === 0 || !searchResults[0].results) {
-                        renderError("No search results found.");
-                        return;
-                    }
-
-                    const topSources = searchResults[0].results.slice(0, 3).map(result => ({
-                        id: result.url,
-                        type: "web"
-                    }));
-                    
-                    const fetchedContent = await content_fetcher.fetch(query=query, source_references=topSources);
-                    
-                    const prompt = `Based on the following search results, please provide a concise, friendly, and informative summary. Also, list the top 3 original sources as citations with a title and a URL.
-                    
-                    Search Query: "${query}"
-                    
-                    Search Results Content:
-                    ${fetchedContent}
-                    
-                    Please format the output as follows:
-                    
-                    Summary:
-                    [Your summary here]
-                    
-                    Citations:
-                    1. [Source Title] - [URL]
-                    2. [Source Title] - [URL]
-                    3. [Source Title] - [URL]
-                    `;
-
-                    const summaryResponse = await generateText(prompt);
-
-                    renderResults(summaryResponse);
-
-                } catch (error) {
-                    console.error('Error during search process:', error);
-                    renderError("An error occurred. Please try again.");
-                } finally {
-                    loadingBox.classList.add('hidden');
-                    resultsBox.classList.remove('hidden');
-                }
+                
+                // Show a message to the user that this is a placeholder
+                loadingBox.classList.add('hidden');
+                resultsBox.classList.remove('hidden');
+                resultsContent.innerHTML = `<p class="text-gray-600">This is a placeholder for a real search API. The search functionality is coming soon!</p>`;
             }
             
-            async function generateText(prompt) {
-                const payload = {
-                    contents: [{
-                        role: "user",
-                        parts: [{ text: prompt }]
-                    }]
-                };
-
-                // WARNING: Never hardcode your API key in client-side code for a production app.
-                // For this example, we use a placeholder. In a real application, you should
-                // use a backend server to handle API calls securely.
-                const apiKey = ""; 
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-                
-                let response, result, retries = 0;
-                const maxRetries = 5;
-                const baseDelay = 1000;
-
-                while (retries < maxRetries) {
-                    try {
-                        response = await fetch(apiUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
+            // PWA service worker registration script
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/service-worker.js')
+                        .then(registration => {
+                            console.log('Service Worker registered! Scope:', registration.scope);
+                        })
+                        .catch(err => {
+                            console.log('Service Worker registration failed:', err);
                         });
-
-                        if (response.status === 429) { // Rate limit exceeded
-                            retries++;
-                            await new Promise(resolve => setTimeout(resolve, baseDelay * Math.pow(2, retries)));
-                            continue;
-                        }
-
-                        result = await response.json();
-                        break; // Exit loop on success
-                    } catch (error) {
-                        retries++;
-                        await new Promise(resolve => setTimeout(resolve, baseDelay * Math.pow(2, retries)));
-                    }
-                }
-
-                if (retries === maxRetries) {
-                    throw new Error('API call failed after multiple retries.');
-                }
-                
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    return result.candidates[0].content.parts[0].text;
-                } else {
-                    throw new Error('Unexpected API response structure or no content.');
-                }
-            }
-
-            function renderResults(summary) {
-                resultsContent.innerHTML = ''; // Clear previous content
-
-                // Added more robust parsing to handle cases where citations might not be present.
-                const hasCitations = summary.includes('Citations:');
-                let summaryText = summary;
-                let citationsText = '';
-
-                if (hasCitations) {
-                    const parts = summary.split('Citations:');
-                    summaryText = parts[0].replace('Summary:', '').trim();
-                    citationsText = parts[1].trim();
-                } else {
-                    summaryText = summary.replace('Summary:', '').trim();
-                }
-
-                const summaryHtml = `<p>${summaryText}</p>`;
-                resultsContent.innerHTML += summaryHtml;
-
-                if (hasCitations && citationsText) {
-                    const citationLines = citationsText.split('\n').map(line => line.trim()).filter(line => line);
-                    
-                    const citationsHtml = `
-                        <div class="mt-4 pt-4 border-t border-gray-200">
-                            <h3 class="text-sm font-semibold text-gray-500 mb-2">Sources</h3>
-                            <ul class="list-disc pl-5 space-y-2 text-sm text-gray-500">
-                                ${citationLines.map(line => `<li>${line}</li>`).join('')}
-                            </ul>
-                        </div>
-                    `;
-                    resultsContent.innerHTML += citationsHtml;
-                }
-            }
-
-            function renderError(message) {
-                resultsContent.innerHTML = `<p class="text-red-500">${message}</p>`;
+                });
             }
         });
-
-        // PWA service worker registration script
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(registration => {
-                        console.log('Service Worker registered! Scope:', registration.scope);
-                    })
-                    .catch(err => {
-                        console.log('Service Worker registration failed:', err);
-                    });
-            });
-        }
     </script>
 </body>
 </html>
-
