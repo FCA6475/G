@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G</title>
+    <link rel="manifest" href="/manifest.json">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            transition: background-color 0.5s ease-in-out;
+        }
+
+        body.dark-mode {
+            background-color: #121212;
+        }
+        
+        body.dark-mode .main-container {
+            background-color: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark-mode .search-results-box {
+            background-color: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px) saturate(150%);
+            -webkit-backdrop-filter: blur(15px) saturate(150%);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark-mode #search-input {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #eee;
+        }
+
+        body.dark-mode #search-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        body.dark-mode #search-input:focus {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        body.dark-mode .text-gray-800 { color: #f0f2f5; }
+        body.dark-mode .text-gray-700 { color: #ddd; }
+        body.dark-mode .text-gray-600 { color: #bbb; }
+        body.dark-mode .text-gray-500 { color: #999; }
+        body.dark-mode .icon-button { color: #999; }
+        body.dark-mode .customization-button {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #ddd;
+        }
+        body.dark-mode .customization-button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        body.dark-mode .user-profile-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #ddd;
+        }
+        body.dark-mode .loading-animation {
+            border-top: 4px solid #4a90e2;
+        }
+
+
+        .main-container {
+            background-color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2.5rem;
+            max-width: 800px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .search-results-box {
+            background-color: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(15px) saturate(150%);
+            -webkit-backdrop-filter: blur(15px) saturate(150%);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        #search-input {
+            width: 100%;
+            padding: 1rem 3rem 1rem 1.5rem;
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            background-color: rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+            outline: none;
+            color: #333;
+        }
+
+        #search-input::placeholder {
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        #search-input:focus {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .icon-button {
+            position: absolute;
+            right: 0.75rem;
+            padding: 0.5rem;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            color: #7d7d8e;
+            transition: all 0.2s ease;
+        }
+
+        .icon-button:hover {
+            transform: scale(1.1);
+            color: #1a73e8;
+        }
+
+        .customization-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .customization-button {
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: #444;
+            padding: 0.75rem;
+            border-radius: 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .customization-button:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .color-swatch {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .color-swatch:hover {
+            border-color: #555;
+        }
+
+        .tooltip {
+            visibility: hidden;
+            background-color: #333;
+            color: white;
+            text-align: center;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            position: absolute;
+            z-index: 10;
+            bottom: 150%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .customization-button:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .loading-animation {
+            width: 2rem;
+            height: 2rem;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #58b6fa;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .user-profile-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .user-profile-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .user-icon {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px) saturate(150%);
+            -webkit-backdrop-filter: blur(10px) saturate(150%);
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            font-size: 1.25rem;
+            font-weight: 500;
+            background-size: cover;
+            background-position: center;
+            transition: background-image 0.2s ease;
+        }
+
+        .user-name {
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+        }
+
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2.5rem;
+            background-color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        @media (max-width: 640px) {
+            .main-container, .login-container {
+                padding: 1.5rem;
+                border-radius: 1.5rem;
+            }
+
+            .user-profile-btn {
+                top: 1rem;
+                right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen" class="login-container">
+        <h1 class="text-2xl font-semibold text-gray-800 mb-4">Welcome</h1>
+        <p class="text-gray-500 mb-6">Please enter your personal code to continue.</p>
+        <div class="input-group mb-4">
+            <input type="password" id="password-input" class="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter code">
+        </div>
+        <button id="login-button" class="w-full bg-blue-500 text-white font-medium py-3 rounded-xl hover:bg-blue-600 transition-colors">Enter</button>
+        <p id="login-error" class="text-red-500 mt-2 hidden">Incorrect code. Please try again.</p>
+    </div>
+
+    <div id="main-app" class="main-container hidden">
+        <div class="user-profile-btn">
+            <div id="user-icon" class="user-icon">
+                <span id="account-initial"></span>
+            </div>
+            <span id="user-name-display" class="user-name"></span>
+        </div>
+        <input type="file" id="profile-picture-upload" class="hidden" accept="image/*">
+
+        <div class="flex flex-col items-center text-center mb-6">
+            <h1 class="text-3xl font-semibold text-gray-800 mb-2">G</h1>
+            <p class="text-gray-500 max-w-sm">A new way to find information.</p>
+        </div>
+
+        <div class="input-group">
+            <input type="text" id="search-input" placeholder="What are the ingredients for...">
+            <button id="search-button" class="icon-button">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="customization-buttons">
+            <button id="add-btn" class="customization-button relative">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                <span class="tooltip">Add to favorites</span>
+            </button>
+            <button id="edit-btn" class="customization-button relative">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+                <span class="tooltip">Edit summary</span>
+            </button>
+            <button id="remove-btn" class="customization-button relative">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                <span class="tooltip">Remove result</span>
+            </button>
+        </div>
+
+        <div class="color-options flex justify-center items-center gap-4 mt-8">
+            <h3 class="text-sm text-gray-500 font-medium">Theme:</h3>
+            <div class="color-swatch bg-gray-200" data-color="light"></div>
+            <div class="color-swatch bg-blue-100" data-color="#e3f2fd"></div>
+            <div class="color-swatch bg-purple-100" data-color="#ede9fe"></div>
+            <div class="color-swatch bg-green-100" data-color="#e0ffe2"></div>
+            <div class="color-swatch bg-gray-900" data-color="dark"></div>
+        </div>
+
+        <div id="loading-box" class="flex justify-center mt-6 hidden">
+            <div class="loading-animation"></div>
+        </div>
+        
+        <div id="results-box" class="search-results-box hidden">
+            <h2 id="results-title" class="text-xl font-medium text-gray-700 mb-3">Search Results</h2>
+            <div id="results-content" class="text-gray-600 leading-relaxed">
+                </div>
+        </div>
+
+        <div id="message-box" class="fixed bottom-4 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-sm px-4 py-2 rounded-full transform scale-0 transition-transform duration-300"></div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginScreen = document.getElementById('login-screen');
+            const mainApp = document.getElementById('main-app');
+            const passwordInput = document.getElementById('password-input');
+            const loginButton = document.getElementById('login-button');
+            const loginError = document.getElementById('login-error');
+            const searchButton = document.getElementById('search-button');
+            const searchInput = document.getElementById('search-input');
+            const resultsBox = document.getElementById('results-box');
+            const resultsContent = document.getElementById('results-content');
+            const loadingBox = document.getElementById('loading-box');
+            
+            // New elements for profile customization
+            const userIcon = document.getElementById('user-icon');
+            const accountInitial = document.getElementById('account-initial');
+            const userNameDisplay = document.getElementById('user-name-display');
+            const profilePictureUpload = document.getElementById('profile-picture-upload');
+
+            const colorSwatches = document.querySelectorAll('.color-swatch');
+
+            // Check if already logged in
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                showMainApp();
+            }
+
+            loginButton.addEventListener('click', handleLogin);
+            passwordInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleLogin();
+                }
+            });
+
+            function handleLogin() {
+                // For a production app, the password should not be hardcoded in the client.
+                if (passwordInput.value === '2244') {
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    loginError.classList.add('hidden');
+                    promptForName();
+                } else {
+                    loginError.classList.remove('hidden');
+                }
+            }
+            
+            function promptForName() {
+                let userName = localStorage.getItem('userName');
+                if (!userName) {
+                    userName = window.prompt("Welcome! Please enter your name:");
+                    if (userName) {
+                        localStorage.setItem('userName', userName);
+                    } else {
+                        userName = 'User'; // Default name
+                        localStorage.setItem('userName', userName);
+                    }
+                }
+                updateProfileDisplay();
+                showMainApp();
+            }
+
+            function updateProfileDisplay() {
+                const userName = localStorage.getItem('userName') || 'User';
+                const profilePicture = localStorage.getItem('profilePicture');
+                userNameDisplay.textContent = userName;
+
+                if (profilePicture) {
+                    userIcon.style.backgroundImage = `url(${profilePicture})`;
+                    userIcon.style.backgroundColor = 'transparent';
+                    accountInitial.style.display = 'none';
+                } else {
+                    userIcon.style.backgroundImage = 'none';
+                    userIcon.style.backgroundColor = '';
+                    accountInitial.style.display = 'flex';
+                    accountInitial.textContent = userName.charAt(0).toUpperCase();
+                }
+            }
+
+            function showMainApp() {
+                loginScreen.classList.add('hidden');
+                mainApp.classList.remove('hidden');
+                updateProfileDisplay();
+            }
+
+            // Event listeners for profile customization
+            userIcon.addEventListener('click', () => {
+                profilePictureUpload.click();
+            });
+
+            profilePictureUpload.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        localStorage.setItem('profilePicture', e.target.result);
+                        updateProfileDisplay();
+                        showMessage("Profile picture updated!", "success");
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            userNameDisplay.addEventListener('click', () => {
+                const newName = window.prompt("Please enter your new name:");
+                if (newName && newName.trim() !== '') {
+                    localStorage.setItem('userName', newName.trim());
+                    updateProfileDisplay();
+                    showMessage("User name updated!", "success");
+                }
+            });
+
+            searchButton.addEventListener('click', handleSearch);
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleSearch();
+                }
+            });
+            
+            colorSwatches.forEach(swatch => {
+                swatch.addEventListener('click', (e) => {
+                    const color = e.target.dataset.color;
+                    if (color === 'dark') {
+                        document.body.classList.add('dark-mode');
+                        document.body.style.backgroundColor = ''; // Reset inline style
+                    } else if (color === 'light') {
+                        document.body.classList.remove('dark-mode');
+                        document.body.style.backgroundColor = '#f0f2f5';
+                    } else {
+                        document.body.classList.remove('dark-mode');
+                        document.body.style.backgroundColor = color;
+                    }
+                    showMessage("Theme updated!", "success");
+                });
+            });
+
+            document.getElementById('add-btn').addEventListener('click', () => showMessage("Result added to favorites!", "success"));
+            document.getElementById('edit-btn').addEventListener('click', () => showMessage("Editing feature is coming soon.", "info"));
+            document.getElementById('remove-btn').addEventListener('click', () => {
+                resultsBox.classList.add('hidden');
+                showMessage("Result has been removed.", "info");
+            });
+            
+            function showMessage(message, type) {
+                const messageBox = document.getElementById('message-box');
+                messageBox.textContent = message;
+                messageBox.classList.remove('scale-0', 'bg-red-500', 'bg-green-500', 'bg-blue-500');
+                if (type === 'success') {
+                    messageBox.classList.add('bg-green-500');
+                } else if (type === 'error') {
+                    messageBox.classList.add('bg-red-500');
+                } else {
+                    messageBox.classList.add('bg-blue-500');
+                }
+                messageBox.classList.add('scale-100');
+                setTimeout(() => {
+                    messageBox.classList.remove('scale-100');
+                    messageBox.classList.add('scale-0');
+                }, 3000);
+            }
+
+            async function handleSearch() {
+                const query = searchInput.value.trim();
+                if (!query) {
+                    showMessage("Please enter a search query.", "error");
+                    return;
+                }
+
+                resultsBox.classList.add('hidden');
+                loadingBox.classList.remove('hidden');
+
+                try {
+                    // This code must be run in an environment where google_search and
+                    // content_fetcher tools are provided (e.g., Google AI Studio).
+                    const searchResults = await google_search.search(queries=[query]);
+                    
+                    if (!searchResults || searchResults.length === 0 || !searchResults[0].results) {
+                        renderError("No search results found.");
+                        return;
+                    }
+
+                    const topSources = searchResults[0].results.slice(0, 3).map(result => ({
+                        id: result.url,
+                        type: "web"
+                    }));
+                    
+                    const fetchedContent = await content_fetcher.fetch(query=query, source_references=topSources);
+                    
+                    const prompt = `Based on the following search results, please provide a concise, friendly, and informative summary. Also, list the top 3 original sources as citations with a title and a URL.
+                    
+                    Search Query: "${query}"
+                    
+                    Search Results Content:
+                    ${fetchedContent}
+                    
+                    Please format the output as follows:
+                    
+                    Summary:
+                    [Your summary here]
+                    
+                    Citations:
+                    1. [Source Title] - [URL]
+                    2. [Source Title] - [URL]
+                    3. [Source Title] - [URL]
+                    `;
+
+                    const summaryResponse = await generateText(prompt);
+
+                    renderResults(summaryResponse);
+
+                } catch (error) {
+                    console.error('Error during search process:', error);
+                    renderError("An error occurred. Please try again.");
+                } finally {
+                    loadingBox.classList.add('hidden');
+                    resultsBox.classList.remove('hidden');
+                }
+            }
+            
+            async function generateText(prompt) {
+                const payload = {
+                    contents: [{
+                        role: "user",
+                        parts: [{ text: prompt }]
+                    }]
+                };
+
+                // WARNING: Never hardcode your API key in client-side code for a production app.
+                // For this example, we use a placeholder. In a real application, you should
+                // use a backend server to handle API calls securely.
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                
+                let response, result, retries = 0;
+                const maxRetries = 5;
+                const baseDelay = 1000;
+
+                while (retries < maxRetries) {
+                    try {
+                        response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (response.status === 429) { // Rate limit exceeded
+                            retries++;
+                            await new Promise(resolve => setTimeout(resolve, baseDelay * Math.pow(2, retries)));
+                            continue;
+                        }
+
+                        result = await response.json();
+                        break; // Exit loop on success
+                    } catch (error) {
+                        retries++;
+                        await new Promise(resolve => setTimeout(resolve, baseDelay * Math.pow(2, retries)));
+                    }
+                }
+
+                if (retries === maxRetries) {
+                    throw new Error('API call failed after multiple retries.');
+                }
+                
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    return result.candidates[0].content.parts[0].text;
+                } else {
+                    throw new Error('Unexpected API response structure or no content.');
+                }
+            }
+
+            function renderResults(summary) {
+                resultsContent.innerHTML = ''; // Clear previous content
+
+                // Added more robust parsing to handle cases where citations might not be present.
+                const hasCitations = summary.includes('Citations:');
+                let summaryText = summary;
+                let citationsText = '';
+
+                if (hasCitations) {
+                    const parts = summary.split('Citations:');
+                    summaryText = parts[0].replace('Summary:', '').trim();
+                    citationsText = parts[1].trim();
+                } else {
+                    summaryText = summary.replace('Summary:', '').trim();
+                }
+
+                const summaryHtml = `<p>${summaryText}</p>`;
+                resultsContent.innerHTML += summaryHtml;
+
+                if (hasCitations && citationsText) {
+                    const citationLines = citationsText.split('\n').map(line => line.trim()).filter(line => line);
+                    
+                    const citationsHtml = `
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <h3 class="text-sm font-semibold text-gray-500 mb-2">Sources</h3>
+                            <ul class="list-disc pl-5 space-y-2 text-sm text-gray-500">
+                                ${citationLines.map(line => `<li>${line}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                    resultsContent.innerHTML += citationsHtml;
+                }
+            }
+
+            function renderError(message) {
+                resultsContent.innerHTML = `<p class="text-red-500">${message}</p>`;
+            }
+        });
+
+        // PWA service worker registration script
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registered! Scope:', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('Service Worker registration failed:', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
+
